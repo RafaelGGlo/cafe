@@ -32,6 +32,15 @@ set(CMAKE_CXX_FLAGS_PROFILE "${CMAKE_CXX_FLAGS_RELEASE}")
 # Use Unicode for all projects.
 add_definitions(-DUNICODE -D_UNICODE)
 
+# Prefer the installed 64-bit JDK when plugins look up JNI. Without this, CMake
+# can find the older 32-bit Java from PATH and fail the Windows x64 link step.
+set(JAVA_HOME "C:/Program Files/Eclipse Adoptium/jdk-17.0.9.9-hotspot")
+set(ENV{JAVA_HOME} "${JAVA_HOME}")
+set(Java_JAVA_EXECUTABLE "${JAVA_HOME}/bin/java.exe" CACHE FILEPATH "" FORCE)
+set(JAVA_INCLUDE_PATH "${JAVA_HOME}/include" CACHE PATH "" FORCE)
+set(JAVA_INCLUDE_PATH2 "${JAVA_HOME}/include/win32" CACHE PATH "" FORCE)
+set(JAVA_JVM_LIBRARY "${JAVA_HOME}/lib/jvm.lib" CACHE FILEPATH "" FORCE)
+
 # Compilation settings that should be applied to most targets.
 #
 # Be cautious about adding new options here, as plugins use this function by
@@ -89,9 +98,11 @@ endif()
 
 # Copy the native assets provided by the build.dart from all packages.
 set(NATIVE_ASSETS_DIR "${PROJECT_BUILD_DIR}native_assets/windows/")
-install(DIRECTORY "${NATIVE_ASSETS_DIR}"
-   DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
-   COMPONENT Runtime)
+if(EXISTS "${NATIVE_ASSETS_DIR}")
+  install(DIRECTORY "${NATIVE_ASSETS_DIR}"
+    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+    COMPONENT Runtime)
+endif()
 
 # Fully re-copy the assets directory on each build to avoid having stale files
 # from a previous install.

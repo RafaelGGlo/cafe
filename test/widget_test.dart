@@ -1,30 +1,46 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cafeteria/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('faz login e acessa as principais telas internas', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const CafeteriaApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Cafeteria Interna'), findsOneWidget);
+    expect(find.text('Acesso dos funcionários'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.enterText(find.bySemanticsLabel('E-mail'), 'admin@gmail.com');
+    await tester.enterText(find.bySemanticsLabel('Senha'), 'admin');
+    await tester.tap(find.text('Entrar'));
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Olá, Admin! 👋'), findsOneWidget);
+    expect(find.text('Resumo da cafeteria hoje'), findsOneWidget);
+    expect(find.text('Relatório do dia'), findsOneWidget);
+    expect(find.text('Pedidos realizados'), findsOneWidget);
+
+    await tester.tap(find.text('Fluxo de pedidos'));
+    await tester.pumpAndSettle();
+    expect(find.text('Novo pedido'), findsOneWidget);
+    expect(find.text('Café Espresso'), findsOneWidget);
+
+    await tester.tap(find.text('Novo pedido'));
+    await tester.pumpAndSettle();
+    expect(find.text('Nome do cliente'), findsOneWidget);
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -600));
+    await tester.pumpAndSettle();
+    expect(find.text('Salvar pedido'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Voltar'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Produtos'));
+    await tester.pumpAndSettle();
+    expect(find.text('Gerenciar produtos'), findsOneWidget);
+    expect(find.text('Novo produto'), findsOneWidget);
+    expect(find.text('Editar'), findsWidgets);
   });
 }
