@@ -1,7 +1,7 @@
 import 'produto.dart';
 
 class ItemPedido {
-  const ItemPedido({required this.produto, required this.quantidade});
+  ItemPedido({required this.produto, required this.quantidade});
 
   final Produto produto;
   final int quantidade;

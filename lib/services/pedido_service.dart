@@ -147,6 +147,11 @@ class PedidoService extends ChangeNotifier {
 
   ItemPedido _itemFromMap(Map<String, dynamic> map) {
     final produtoMap = map['produto'] as Map<String, dynamic>;
+    final produtoIcon = IconData(
+      produtoMap['icone'] as int,
+      fontFamily: 'MaterialIcons',
+    );
+
     return ItemPedido(
       quantidade: map['quantidade'] as int,
       produto: Produto(
@@ -156,10 +161,7 @@ class PedidoService extends ChangeNotifier {
         categoria: produtoMap['categoria'] as String,
         preco: (produtoMap['preco'] as num).toDouble(),
         disponivel: produtoMap['disponivel'] as bool,
-        icone: IconData(
-          produtoMap['icone'] as int,
-          fontFamily: 'MaterialIcons',
-        ),
+        icone: produtoIcon,
       ),
     );
   }

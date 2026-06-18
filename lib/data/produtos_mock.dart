@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/produto.dart';
 
-const List<Produto> produtosMock = [
+final List<Produto> produtosMock = [
   Produto(
     id: 'produto-1',
     nome: 'Café Espresso',

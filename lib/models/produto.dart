@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Produto {
-  const Produto({
+  Produto({
     required this.id,
     required this.nome,
     required this.descricao,
