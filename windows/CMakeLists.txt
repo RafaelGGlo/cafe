@@ -32,14 +32,36 @@ set(CMAKE_CXX_FLAGS_PROFILE "${CMAKE_CXX_FLAGS_RELEASE}")
 # Use Unicode for all projects.
 add_definitions(-DUNICODE -D_UNICODE)
 
-# Prefer the installed 64-bit JDK when plugins look up JNI. Without this, CMake
-# can find the older 32-bit Java from PATH and fail the Windows x64 link step.
-set(JAVA_HOME "C:/Program Files/Eclipse Adoptium/jdk-17.0.9.9-hotspot")
-set(ENV{JAVA_HOME} "${JAVA_HOME}")
-set(Java_JAVA_EXECUTABLE "${JAVA_HOME}/bin/java.exe" CACHE FILEPATH "" FORCE)
-set(JAVA_INCLUDE_PATH "${JAVA_HOME}/include" CACHE PATH "" FORCE)
-set(JAVA_INCLUDE_PATH2 "${JAVA_HOME}/include/win32" CACHE PATH "" FORCE)
-set(JAVA_JVM_LIBRARY "${JAVA_HOME}/lib/jvm.lib" CACHE FILEPATH "" FORCE)
+# Prefer a valid 64-bit JDK when plugins look up JNI. The jni Flutter plugin
+# needs jni.h and jvm.lib, which are not included in every Java runtime bundle.
+set(_JNI_JDK_CANDIDATES)
+if(DEFINED ENV{JAVA_HOME})
+  list(APPEND _JNI_JDK_CANDIDATES "$ENV{JAVA_HOME}")
+endif()
+list(APPEND _JNI_JDK_CANDIDATES
+  "C:/Program Files/Android/openjdk/jdk-21.0.8"
+  "C:/Program Files/Android/Android Studio/jbr"
+)
+
+foreach(_JNI_JDK_HOME IN LISTS _JNI_JDK_CANDIDATES)
+  if(EXISTS "${_JNI_JDK_HOME}/include/jni.h"
+      AND EXISTS "${_JNI_JDK_HOME}/include/win32/jni_md.h"
+      AND EXISTS "${_JNI_JDK_HOME}/lib/jvm.lib")
+    set(JAVA_HOME "${_JNI_JDK_HOME}")
+    set(ENV{JAVA_HOME} "${JAVA_HOME}")
+    set(Java_JAVA_EXECUTABLE "${JAVA_HOME}/bin/java.exe" CACHE FILEPATH "" FORCE)
+    set(JAVA_INCLUDE_PATH "${JAVA_HOME}/include" CACHE PATH "" FORCE)
+    set(JAVA_INCLUDE_PATH2 "${JAVA_HOME}/include/win32" CACHE PATH "" FORCE)
+    set(JAVA_JVM_LIBRARY "${JAVA_HOME}/lib/jvm.lib" CACHE FILEPATH "" FORCE)
+    break()
+  endif()
+endforeach()
+
+if(NOT JAVA_HOME)
+  message(WARNING "No JDK with JNI headers was found. Set JAVA_HOME to a full JDK that contains include/jni.h and lib/jvm.lib.")
+endif()
+unset(_JNI_JDK_CANDIDATES)
+unset(_JNI_JDK_HOME)
 
 # Compilation settings that should be applied to most targets.
 #

@@ -148,6 +148,7 @@ class PedidoService extends ChangeNotifier {
   ItemPedido _itemFromMap(Map<String, dynamic> map) {
     final produtoMap = map['produto'] as Map<String, dynamic>;
     final produtoIcon = IconData(
+      // ignore: non_const_argument_for_const_parameter
       produtoMap['icone'] as int,
       fontFamily: 'MaterialIcons',
     );

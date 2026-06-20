@@ -1,16 +1,11 @@
 import "package:flutter/material.dart";
-import 'package:workmanager/workmanager.dart';
 
 import 'screens/tela_login_funcionario.dart';
 import 'services/auth_service.dart';
-import 'services/backup_scheduler_service.dart';
 import 'services/pedido_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (isAutomaticBackupSupported) {
-    await Workmanager().initialize(backupCallbackDispatcher);
-  }
   await AuthService.instance.carregarUsuarios();
   await PedidoService.instance.carregarPedidos();
   runApp(const CafeteriaApp());
